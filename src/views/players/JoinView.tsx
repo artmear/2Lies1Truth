@@ -81,7 +81,7 @@ export default function JoinView({ onJoinSuccess }: JoinViewProps) {
             placeholder="e.g. B7K9"
             maxLength={4}
             disabled={isSubmitting}
-            style={{ padding: '14px', fontSize: '1.1rem', textTransform: 'uppercase', borderRadius: 'var(--radius)', border: '1px solid #262636', backgroundColor: '#1f1f2e', color: '#fff' }}
+            style={{ padding: '14px', fontSize: '1.1rem', borderRadius: 'var(--radius)', border: '1px solid #262636', backgroundColor: '#1f1f2e', color: '#fff' }}
           />
         </div>
 
