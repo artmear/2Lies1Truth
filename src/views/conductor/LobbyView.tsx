@@ -102,7 +102,7 @@ export default function LobbyView({ roomCode }: { roomCode: string }) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', maxHeight: '450px', overflowY: 'auto' }}>
             {players.map((player) => (
               <div key={player.id} style={{ fontSize: '1.6rem', padding: '12px 20px', backgroundColor: '#1f1f2e', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                ⚡ {player.name}
+                {player.name}
               </div>
             ))}
           </div>

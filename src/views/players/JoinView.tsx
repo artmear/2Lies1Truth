@@ -24,11 +24,10 @@ export default function JoinView({ onJoinSuccess }: JoinViewProps) {
         .from('rooms')
         .select('id')
         .eq('room_code', cleanRoom)
-        .eq('status', 'LOBBY')
         .maybeSingle();
 
       if (roomError || !room) {
-        alert('Room not found or game has already started!');
+        alert('Room not found! Please check the code on the main screen.');
         setIsSubmitting(false);
         return;
       }
