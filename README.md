@@ -39,7 +39,7 @@ cat ./database/setup.sql | xclip -selection clipboard
 
 ### 4. Environment Variables
 
-Create a file named .env in your project's absolute root directory (at the same level as package.json) and append your Supabase credentials:
+Create a file named .env in your project's absolute root directory (at the same level as package.json) and append your Supabase credentials and conductor's password (just create a new password):
 
 ```bash
 VITE_SUPABASE_URL=[https://your-project-id.supabase.co](https://your-project-id.supabase.co)
