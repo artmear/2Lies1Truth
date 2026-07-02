@@ -20,7 +20,6 @@ export default function JoinView({ onJoinSuccess }: JoinViewProps) {
     setIsSubmitting(true);
 
     try {
-      // Check if a room with this dynamic code exists and is still in LOBBY status
       const { data: room, error: roomError } = await supabase
         .from('rooms')
         .select('id')
@@ -34,22 +33,19 @@ export default function JoinView({ onJoinSuccess }: JoinViewProps) {
         return;
       }
 
-      // Prevent player duplication inside this dynamic instance
       const { data: existingPlayer } = await supabase
         .from('players')
-        .select('id, name')
+        .select('id')
         .eq('room_id', room.id)
         .eq('name', cleanName)
         .maybeSingle();
 
       if (existingPlayer) {
-        localStorage.setItem('player_id', existingPlayer.id);
-        localStorage.setItem('player_name', existingPlayer.name);
-        onJoinSuccess(cleanRoom);
+        alert('That name is already taken in this room! Please choose a unique name.');
+        setIsSubmitting(false);
         return;
       }
 
-      // Register the new player bound to the verified room record ID
       const { data: newPlayer, error: insertError } = await supabase
         .from('players')
         .insert({ room_id: room.id, name: cleanName })
