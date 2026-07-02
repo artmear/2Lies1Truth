@@ -81,6 +81,10 @@ export default function ConductorScreen() {
         </div>
 
         <div style={{ fontSize: '1.3rem', fontWeight: 'bold', letterSpacing: '0.5px' }}>
+          URL: <span style={{ color: 'var(--primary, #6366f1)', padding: '8px 18px', borderRadius: '8px', marginLeft: '8px', fontFamily: 'monospace', fontWeight: '900' }}>{"http://10.227.150.144:5173/"}</span>
+        </div>
+
+        <div style={{ fontSize: '1.3rem', fontWeight: 'bold', letterSpacing: '0.5px' }}>
           ROOM CODE: <span style={{ color: 'var(--primary, #6366f1)', backgroundColor: '#1e1b4b', padding: '8px 18px', borderRadius: '8px', border: '1px solid var(--primary, #6366f1)', marginLeft: '8px', fontFamily: 'monospace', fontWeight: '900' }}>{roomCode}</span>
         </div>
       </div>

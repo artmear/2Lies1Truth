@@ -44,6 +44,7 @@ Create a file named .env in your project's absolute root directory (at the same 
 ```bash
 VITE_SUPABASE_URL=[https://your-project-id.supabase.co](https://your-project-id.supabase.co)
 VITE_SUPABASE_ANON_KEY=your-public-anon-key-here
+VITE_ADMIN_PASSWORD=<admin-password>
 ```
 
 ## How to Run and Test
