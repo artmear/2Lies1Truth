@@ -29,10 +29,7 @@ export default function WritingView({ roomCode }: { roomCode: string }) {
 
       if (rErr) throw rErr;
 
-      await supabase
-        .from('rooms')
-        .update({ status: 'VOTING' })
-        .eq('room_code', roomCode);
+      await supabase.from('rooms').update({ status: 'VOTING' }).eq('room_code', roomCode);
 
     } catch (err) {
       console.error(err);
@@ -43,24 +40,30 @@ export default function WritingView({ roomCode }: { roomCode: string }) {
   };
 
   return (
-    <form onSubmit={handleStartVoting} style={{ padding: '40px', maxWidth: '600px', margin: '0 auto' }}>
-      <h2>📝 Input Round Statements</h2>
-      <input style={{ display: 'block', width: '100%', margin: '10px 0', padding: '10px' }} placeholder="Statement 1" value={f1} onChange={e => setF1(e.target.value)} />
-      <input style={{ display: 'block', width: '100%', margin: '10px 0', padding: '10px' }} placeholder="Statement 2" value={f2} onChange={e => setF2(e.target.value)} />
-      <input style={{ display: 'block', width: '100%', margin: '10px 0', padding: '10px' }} placeholder="Statement 3" value={f3} onChange={e => setF3(e.target.value)} />
-      
-      <label style={{ display: 'block', margin: '20px 0' }}>
-        Which one is the TRUTH? 
-        <select value={correct} onChange={e => setCorrect(Number(e.target.value))} style={{ marginLeft: '10px', padding: '5px' }}>
-          <option value={1}>Statement 1</option>
-          <option value={2}>Statement 2</option>
-          <option value={3}>Statement 3</option>
-        </select>
-      </label>
+    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', padding: '40px' }}>
+      <form onSubmit={handleStartVoting} style={{ backgroundColor: 'var(--bg-card)', padding: '50px', borderRadius: '20px', width: '100%', maxWidth: '900px', border: '1px solid #262636', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}>
+        
+        <h2 style={{ fontSize: '2.5rem', textAlign: 'center', marginBottom: '40px', color: 'var(--primary)' }}>Input Round Statements</h2>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <input style={{ width: '100%', padding: '18px', fontSize: '1.4rem', borderRadius: '10px', border: '1px solid #3e3e56', backgroundColor: '#13131a', color: '#fff' }} placeholder="Statement 1" value={f1} onChange={e => setF1(e.target.value)} />
+          <input style={{ width: '100%', padding: '18px', fontSize: '1.4rem', borderRadius: '10px', border: '1px solid #3e3e56', backgroundColor: '#13131a', color: '#fff' }} placeholder="Statement 2" value={f2} onChange={e => setF2(e.target.value)} />
+          <input style={{ width: '100%', padding: '18px', fontSize: '1.4rem', borderRadius: '10px', border: '1px solid #3e3e56', backgroundColor: '#13131a', color: '#fff' }} placeholder="Statement 3" value={f3} onChange={e => setF3(e.target.value)} />
+        </div>
+        
+        <div style={{ margin: '35px 0', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', fontSize: '1.5rem' }}>
+          <span>Which statement is the TRUTH?</span>
+          <select value={correct} onChange={e => setCorrect(Number(e.target.value))} style={{ padding: '12px 24px', fontSize: '1.3rem', borderRadius: '8px', backgroundColor: '#1e1b4b', color: '#fff', border: '2px solid var(--primary)', fontWeight: 'bold', cursor: 'pointer' }}>
+            <option value={1}>Statement 1</option>
+            <option value={2}>Statement 2</option>
+            <option value={3}>Statement 3</option>
+          </select>
+        </div>
 
-      <button type="submit" disabled={loading} style={{ padding: '12px 24px', backgroundColor: '#28a745', color: '#fff', border: 'none', cursor: 'pointer' }}>
-        {loading ? 'Processing...' : '🚀 Launch Live Voting'}
-      </button>
-    </form>
+        <button type="submit" disabled={loading} className="btn btn-primary" style={{ height: '65px', fontSize: '1.5rem', marginTop: '10px' }}>
+          {loading ? 'Locking configuration...' : 'Launch Live Voting'}
+        </button>
+      </form>
+    </div>
   );
 }

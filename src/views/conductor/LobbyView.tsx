@@ -79,28 +79,35 @@ export default function LobbyView({ roomCode }: { roomCode: string }) {
   };
 
   return (
-    <div style={{ padding: '40px', textAlign: 'center' }}>
-      <h1 style={{ fontSize: '42px', margin: '10px 0' }}>Room Code: <span style={{ color: '#007bff' }}>{roomCode}</span></h1>
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: '100vh', padding: '60px', alignItems: 'center', gap: '80px', maxWidth: '1600px', margin: '0 auto' }}>
       
-      <div style={{ backgroundColor: 'white', padding: '16px', display: 'inline-block', borderRadius: '8px', margin: '20px 0' }}>
-        <QRCodeSVG value={gameUrl} size={220} />
-      </div>
-      <p style={{ color: '#aaa' }}>Scan QR or open: {gameUrl}</p>
-
-      <div style={{ margin: '30px auto', maxWidth: '400px' }}>
-        <h3>Joined Players ({players.length}):</h3>
-        <ul style={{ padding: 0 }}>
-          {players.map((player) => (
-            <li key={player.id} style={{ fontSize: '24px', listStyle: 'none', margin: '10px 0', borderBottom: '1px solid #333', paddingBottom: '8px' }}>
-              {player.name}
-            </li>
-          ))}
-        </ul>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '20px' }}>
+        <h3 style={{ fontSize: '1.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '2px' }}>Join the game</h3>
+        <h1 style={{ fontSize: '5.5rem', fontWeight: '900', letterSpacing: '4px', margin: '10px 0' }}>Code: <span style={{ color: 'var(--primary)' }}>{roomCode}</span></h1>
+        
+        <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)', display: 'inline-block' }}>
+          <QRCodeSVG value={gameUrl} size={280} />
+        </div>
+        <p style={{ fontSize: '1.4rem', color: 'var(--text-muted)', marginTop: '10px' }}>URL: <strong style={{ color: '#fff' }}>{gameUrl}</strong></p>
       </div>
 
-      <button onClick={handleStartGame} disabled={loading} style={{ padding: '15px 30px', fontSize: '20px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
-        {loading ? 'Launching...' : 'Start Game'}
-      </button>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '80%', justifyContent: 'space-between', backgroundColor: 'var(--bg-card)', padding: '40px', borderRadius: '20px', border: '1px solid #262636' }}>
+        <div>
+          <h2 style={{ fontSize: '2.2rem', marginBottom: '30px', borderBottom: '2px solid #262636', paddingBottom: '15px' }}>👥 Active Lobby ({players.length})</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', maxHeight: '450px', overflowY: 'auto' }}>
+            {players.map((player) => (
+              <div key={player.id} style={{ fontSize: '1.6rem', padding: '12px 20px', backgroundColor: '#1f1f2e', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                ⚡ {player.name}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <button onClick={handleStartGame} disabled={loading} className="btn btn-primary" style={{ height: '70px', fontSize: '1.6rem', background: 'var(--truth-green)', marginTop: '40px' }}>
+          {loading ? 'Processing...' : 'Start Match (Go to Writing)'}
+        </button>
+      </div>
+
     </div>
   );
 }

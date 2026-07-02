@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/config/supabaseClient';
+import '@/App.css';
 
 export default function PlayerScoreView({ currentRoundId }: { currentRoundId: string | null }) {
   const [feedback, setFeedback] = useState('Evaluating scores...');
@@ -18,23 +19,28 @@ export default function PlayerScoreView({ currentRoundId }: { currentRoundId: st
 
       if (round && vote) {
         if (vote.chosen_option === round.correct_option) {
-          setFeedback('🎉 Correct! You scored +100 points!');
+          setFeedback('🎉 Correct! You earned +100 PTS!');
         } else {
-          setFeedback('❌ Incorrect! You got 0 points this round.');
+          setFeedback('❌ Tricked! 0 points this round.');
         }
       } else {
-        setFeedback('⏳ You did not cast a vote in time.');
+        setFeedback('⏳ Out of time! No vote recorded.');
       }
     };
 
     evaluatePerformance();
   }, [currentRoundId]);
 
+  const isCorrect = feedback.startsWith('🎉');
+
   return (
-    <div style={{ padding: '40px', textAlign: 'center', fontFamily: 'sans-serif' }}>
-      <h2>Round Concluded</h2>
-      <h3 style={{ margin: '30px 0', color: feedback.startsWith('🎉') ? '#28a745' : '#dc3545' }}>{feedback}</h3>
-      <p style={{ fontSize: '20px' }}>Your Global Balance: <strong>{totalScore} pts</strong></p>
+    <div className="mobile-container" style={{ justifyContent: 'center' }}>
+      <div className="mobile-card" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '20px', padding: '40px 24px' }}>
+        <p style={{ color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 'bold', fontSize: '0.9rem' }}>Round Concluded</p>
+        <h2 style={{ fontSize: '1.8rem', color: isCorrect ? 'var(--truth-green)' : 'var(--lie-red)' }}>{feedback}</h2>
+        <div style={{ margin: '10px 0', height: '1px', backgroundColor: '#262636' }} />
+        <p style={{ fontSize: '1.2rem', color: 'var(--text-main)' }}>Your Balance: <strong style={{ color: 'var(--primary)', fontSize: '1.4rem' }}>{totalScore} pts</strong></p>
+      </div>
     </div>
   );
 }

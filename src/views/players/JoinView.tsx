@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/config/supabaseClient';
+import '@/App.css';
 
 interface JoinViewProps {
   onJoinSuccess: (roomCode: string) => void;
@@ -71,52 +72,40 @@ export default function JoinView({ onJoinSuccess }: JoinViewProps) {
   };
 
   return (
-    <form onSubmit={handleJoin} style={{ padding: '30px', maxWidth: '400px', margin: '40px auto', display: 'flex', flexDirection: 'column', gap: '16px', fontFamily: 'sans-serif' }}>
-      <h2>🎮 Join Game Room</h2>
-      
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <label>Room Code:</label>
-        <input
-          type="text"
-          value={roomInput}
-          onChange={(e) => setRoomInput(e.target.value)}
-          placeholder="e.g. B7K9"
-          maxLength={4}
-          disabled={isSubmitting}
-          style={{ padding: '12px', fontSize: '18px', textTransform: 'uppercase', borderRadius: '6px', border: '1px solid #555' }}
-        />
-      </div>
+    <div className="mobile-container" style={{ justifyContent: 'center' }}>
+      <form onSubmit={handleJoin} className="mobile-card" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '10px' }}>Join Party Room</h2>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Room Code:</label>
+          <input
+            type="text"
+            value={roomInput}
+            onChange={(e) => setRoomInput(e.target.value)}
+            placeholder="e.g. B7K9"
+            maxLength={4}
+            disabled={isSubmitting}
+            style={{ padding: '14px', fontSize: '1.1rem', textTransform: 'uppercase', borderRadius: 'var(--radius)', border: '1px solid #262636', backgroundColor: '#1f1f2e', color: '#fff' }}
+          />
+        </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <label>Your Name:</label>
-        <input
-          type="text"
-          value={nameInput}
-          onChange={(e) => setNameInput(e.target.value)}
-          placeholder="e.g. Pedro"
-          maxLength={15}
-          disabled={isSubmitting}
-          style={{ padding: '12px', fontSize: '18px', borderRadius: '6px', border: '1px solid #555' }}
-        />
-      </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <label style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Your Name:</label>
+          <input
+            type="text"
+            value={nameInput}
+            onChange={(e) => setNameInput(e.target.value)}
+            placeholder="e.g. Pedro"
+            maxLength={15}
+            disabled={isSubmitting}
+            style={{ padding: '14px', fontSize: '1.1rem', borderRadius: 'var(--radius)', border: '1px solid #262636', backgroundColor: '#1f1f2e', color: '#fff' }}
+          />
+        </div>
 
-      <button 
-        type="submit" 
-        disabled={isSubmitting} 
-        style={{ 
-          padding: '14px', 
-          fontSize: '18px', 
-          fontWeight: 'bold',
-          backgroundColor: isSubmitting ? '#555' : '#007bff', 
-          color: 'white', 
-          border: 'none', 
-          borderRadius: '6px', 
-          cursor: isSubmitting ? 'not-allowed' : 'pointer',
-          marginTop: '10px'
-        }}
-      >
-        {isSubmitting ? 'Connecting...' : 'Enter Lobby'}
-      </button>
-    </form>
+        <button type="submit" disabled={isSubmitting} className="btn btn-primary" style={{ marginTop: '10px', height: '54px' }}>
+          {isSubmitting ? 'Connecting...' : 'Enter Arena'}
+        </button>
+      </form>
+    </div>
   );
 }

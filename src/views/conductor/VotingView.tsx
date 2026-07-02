@@ -24,9 +24,7 @@ export default function ConductorVotingView({ currentRoundId, roomCode }: { curr
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'votes', filter: `round_id=eq.${currentRoundId}` },
-        () => {
-          setVoteCount((prev) => prev + 1);
-        }
+        () => setVoteCount((prev) => prev + 1)
       )
       .subscribe();
 
@@ -79,13 +77,19 @@ export default function ConductorVotingView({ currentRoundId, roomCode }: { curr
   };
 
   return (
-    <div style={{ padding: '60px', textAlign: 'center' }}>
-      <h1>⏱️ Voting Mode Active</h1>
-      <h2 style={{ fontSize: '80px', color: timer < 10 ? '#ffc107' : '#fff' }}>{timer}s</h2>
-      <h3 style={{ fontSize: '32px', margin: '40px 0' }}>Total Incoming Votes Locked: {voteCount}</h3>
+    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', padding: '40px', gap: '30px', textAlign: 'center' }}>
+      <h1 style={{ fontSize: '3rem', letterSpacing: '1px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>⏱VOTE RUNNING</h1>
       
-      <button onClick={handleEndVoting} style={{ padding: '15px 30px', fontSize: '20px', backgroundColor: '#dc3545', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
-        🛑 Terminate Round & Calculate Standings
+      <div style={{ fontSize: '11rem', fontWeight: '900', color: timer < 10 ? 'var(--lie-red)' : '#fff', transition: 'color 0.5s ease', fontFamily: 'monospace' }}>
+        {timer}<span style={{ fontSize: '4rem' }}>s</span>
+      </div>
+
+      <div style={{ backgroundColor: 'var(--bg-card)', padding: '30px 60px', borderRadius: '15px', border: '1px solid #262636', marginTop: '20px' }}>
+        <h3 style={{ fontSize: '2.5rem', fontWeight: '700' }}>Incoming Ballots: <span style={{ color: 'var(--primary)' }}>{voteCount}</span></h3>
+      </div>
+      
+      <button onClick={handleEndVoting} className="btn" style={{ maxWidth: '500px', height: '65px', fontSize: '1.4rem', backgroundColor: 'var(--lie-red)', color: '#fff', marginTop: '40px' }}>
+        Terminate Round & Compute Scores
       </button>
     </div>
   );

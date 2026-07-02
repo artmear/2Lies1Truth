@@ -23,71 +23,43 @@ export default function ConductorResultsView({ roomCode }: { roomCode: string })
 
   const handleNextRound = async () => {
     try {
-      const { error } = await supabase
-        .from('rooms')
-        .update({ status: 'WRITING' })
-        .eq('room_code', roomCode);
-
-      if (error) throw error;
+      await supabase.from('rooms').update({ status: 'WRITING' }).eq('room_code', roomCode);
     } catch (err) {
-      console.error('Failed to advance to the next round:', err);
+      console.error(err);
     }
   };
 
-  // reset function to destroy the room and cascade-wipe all data
   const handleDestroyAndReset = async () => {
-    const confirmReset = window.confirm(
-      "🚨 WARNING: This will permanently delete the current room, wipe all connected players, reset their scores, and delete all voting history. Proceed?"
-    );
-    
-    if (!confirmReset) return;
-
+    if (!window.confirm("Delete room and purge all player history cascade metadata?")) return;
     try {
-      // Delete the room. ON DELETE CASCADE will instantly purge players, rounds, and votes!
-      const { error } = await supabase
-        .from('rooms')
-        .delete()
-        .eq('room_code', roomCode);
-
-      if (error) throw error;
-
-      // Hard reload the page. 
-      // When ConductorScreen mounts again, LobbyView will run its upsert 
-      // and provision a brand new, empty room with 0 players!
+      await supabase.from('rooms').delete().eq('room_code', roomCode);
       window.location.reload();
-
     } catch (err) {
-      console.error('Failed to execute nuclear room purge:', err);
-      alert('Error trying to destroy the room.');
+      console.error(err);
     }
   };
 
   return (
-    <div style={{ padding: '40px', textAlign: 'center' }}>
-      <h1>Round Results - Current Standings</h1>
+    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', padding: '60px' }}>
+      <h1 style={{ fontSize: '3.5rem', marginBottom: '40px', fontWeight: '900' }}>Leaderboard Standings</h1>
       
-      <div style={{ maxWidth: '500px', margin: '30px auto', textAlign: 'left', backgroundColor: '#222', padding: '20px', borderRadius: '8px' }}>
+      <div style={{ width: '100%', maxWidth: '1000px', backgroundColor: 'var(--bg-card)', padding: '40px', borderRadius: '20px', border: '1px solid #262636', boxShadow: '0 25px 50px rgba(0,0,0,0.4)', display: 'flex', flexDirection: 'column', gap: '15px' }}>
         {standings.map((player, idx) => (
-          <div key={player.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #444', fontSize: '20px' }}>
-            <span>{idx + 1}. {player.name}</span>
-            <span style={{ color: '#007bff', fontWeight: 'bold' }}>{player.score || 0} pts</span>
+          <div key={player.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 30px', backgroundColor: idx === 0 ? '#1e1b4b' : '#14141e', borderRadius: '12px', border: idx === 0 ? '2px solid var(--primary)' : '1px solid transparent' }}>
+            <span style={{ fontSize: '2rem', fontWeight: idx === 0 ? '800' : '500' }}>
+              {idx === 0 ? '👑' : `${idx + 1}.`} {player.name}
+            </span>
+            <span style={{ fontSize: '2rem', color: 'var(--primary)', fontWeight: 'bold' }}>{player.score || 0} PTS</span>
           </div>
         ))}
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '30px' }}>
-        <button 
-          onClick={handleNextRound} 
-          style={{ padding: '12px 24px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '18px' }}
-        >
+      <div style={{ display: 'flex', gap: '25px', marginTop: '50px', width: '100%', maxWidth: '1000px' }}>
+        <button onClick={handleNextRound} className="btn" style={{ flex: 2, height: '65px', fontSize: '1.4rem', backgroundColor: 'var(--primary)', color: '#fff' }}>
           Next Round
         </button>
-
-        <button 
-          onClick={handleDestroyAndReset} 
-          style={{ padding: '12px 24px', backgroundColor: '#dc3545', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '18px', fontWeight: 'bold' }}
-        >
-          Destroy Room & Reset
+        <button onClick={handleDestroyAndReset} className="btn" style={{ flex: 1, height: '65px', fontSize: '1.4rem', backgroundColor: 'var(--lie-red)', color: '#fff' }}>
+          Wipe Arena & Exit
         </button>
       </div>
     </div>
