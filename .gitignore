@@ -25,3 +25,9 @@ dist-ssr
 
 # env
 .env
+
+# .venv
+.venv
+
+# downloaded music
+audio

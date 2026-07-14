@@ -61,6 +61,19 @@ export default function ConductorVotingView({ currentRoundId, roomCode }: { curr
     };
   }, [currentRoundId, gameType, audioKey]);
 
+  const handleDifficultyChange = async (newDifficulty: 'easy' | 'medium') => {
+    if (!currentRoundId || gameType !== 'GTS') return;
+
+    try {
+      await supabase
+        .from('gts_rounds')
+        .update({ difficulty: newDifficulty })
+        .eq('id', currentRoundId);
+    } catch (err) {
+      console.error('Failed to change difficulty:', err);
+    }
+  };
+
   const handleEndVoting = async () => {
     if (!currentRoundId || isEnding) return;
     setIsEnding(true);
@@ -132,10 +145,6 @@ export default function ConductorVotingView({ currentRoundId, roomCode }: { curr
   };
 
   useEffect(() => {
-    if (timer === 0) handleEndVoting();
-  }, [timer]);
-
-  useEffect(() => {
     if (!currentRoundId) return;
     const targetVoteTable = gameType === 'GTS' ? 'gts_votes' : gameType === 'WYR' ? 'wyr_votes' : 'tl_votes';
     const uniqueVotingChannel = `live-votes-${Math.random().toString(36).substring(2, 9)}`;
@@ -172,12 +181,34 @@ export default function ConductorVotingView({ currentRoundId, roomCode }: { curr
       {audioUrl && <audio src={audioUrl} autoPlay style={{ display: 'none' }} key={audioUrl} />}
 
       <h1 style={{ fontSize: '3rem', letterSpacing: '1px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-        ⏱️ {gameType === 'WYR' ? 'Dilemma Voting' : gameType === 'GTS' ? `Guess the Track (${activeDifficulty.toUpperCase()})` : 'Vote Running'}
+        {gameType === 'WYR' ? 'Dilemma Voting' : gameType === 'GTS' ? `Guess the Track (${activeDifficulty.toUpperCase()})` : 'Vote Running'}
       </h1>
       
       <div style={{ fontSize: '11rem', fontWeight: '900', color: timer < 10 ? 'var(--lie-red)' : '#fff', fontFamily: 'monospace' }}>
         {timer}<span style={{ fontSize: '4rem' }}>s</span>
       </div>
+
+      {gameType === 'GTS' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', backgroundColor: '#13131a', padding: '20px 40px', borderRadius: '12px', border: '1px solid #262636', width: '100%', maxWidth: '500px' }}>
+          <p style={{ color: 'var(--text-muted)', fontWeight: 'bold' }}>Live Clue Adjuster:</p>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button 
+              onClick={() => handleDifficultyChange('medium')} 
+              disabled={activeDifficulty === 'medium'}
+              style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #d97706', backgroundColor: activeDifficulty === 'medium' ? '#d97706' : 'transparent', color: '#fff', cursor: 'pointer', fontWeight: 'bold' }}
+            >
+              Medium (Muffled)
+            </button>
+            <button 
+              onClick={() => handleDifficultyChange('easy')} 
+              disabled={activeDifficulty === 'easy'}
+              style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #059669', backgroundColor: activeDifficulty === 'easy' ? '#059669' : 'transparent', color: '#fff', cursor: 'pointer', fontWeight: 'bold' }}
+            >
+              Easy (Original)
+            </button>
+          </div>
+        </div>
+      )}
 
       <div style={{ backgroundColor: 'var(--bg-card)', padding: '30px 60px', borderRadius: '15px', border: '1px solid #262636' }}>
         <h3 style={{ fontSize: '2.5rem', fontWeight: '700' }}>Incoming Ballots: <span style={{ color: 'var(--primary)' }}>{voteCount}</span></h3>
