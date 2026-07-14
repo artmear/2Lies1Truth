@@ -7,11 +7,13 @@ interface Player {
   name: string;
 }
 
+type GameType = '2L1T' | 'WYR' | 'GTS';
+
 export default function LobbyView({ roomCode }: { roomCode: string }) {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(false);
   
-  const [selectedGame, setSelectedGame] = useState<'2L1T' | 'WYR'>('2L1T');
+  const [selectedGame, setSelectedGame] = useState<GameType>('2L1T');
 
   const gameUrl = `http://10.227.150.144:5173/`;
 
@@ -87,6 +89,12 @@ export default function LobbyView({ roomCode }: { roomCode: string }) {
     }
   };
 
+  const getGameLabel = () => {
+    if (selectedGame === 'WYR') return 'Would You Rather';
+    if (selectedGame === 'GTS') return 'Guess The Song';
+    return '2 Lies 1 Truth';
+  };
+
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: '100vh', padding: '60px', alignItems: 'center', gap: '80px', maxWidth: '1600px', margin: '0 auto' }}>
       
@@ -114,24 +122,30 @@ export default function LobbyView({ roomCode }: { roomCode: string }) {
 
         <div style={{ backgroundColor: '#13131a', padding: '20px', borderRadius: '12px', border: '1px solid #262636' }}>
           <p style={{ color: 'var(--text-muted)', marginBottom: '12px', fontWeight: 'bold', fontSize: '1.1rem' }}>SELECT GAME MODE:</p>
-          <div style={{ display: 'flex', gap: '15px' }}>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <button 
               onClick={() => setSelectedGame('2L1T')}
-              style={{ flex: 1, padding: '14px', fontSize: '1.2rem', fontWeight: 'bold', borderRadius: '8px', cursor: 'pointer', border: selectedGame === '2L1T' ? '2px solid var(--primary)' : '1px solid #262636', backgroundColor: selectedGame === '2L1T' ? '#1e1b4b' : 'transparent', color: '#fff', transition: 'all 0.2s' }}
+              style={{ flex: 1, minWidth: '120px', padding: '14px', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '8px', cursor: 'pointer', border: selectedGame === '2L1T' ? '2px solid var(--primary)' : '1px solid #262636', backgroundColor: selectedGame === '2L1T' ? '#1e1b4b' : 'transparent', color: '#fff', transition: 'all 0.2s' }}
             >
               2 Lies 1 Truth
             </button>
             <button 
               onClick={() => setSelectedGame('WYR')}
-              style={{ flex: 1, padding: '14px', fontSize: '1.2rem', fontWeight: 'bold', borderRadius: '8px', cursor: 'pointer', border: selectedGame === 'WYR' ? '2px solid var(--primary)' : '1px solid #262636', backgroundColor: selectedGame === 'WYR' ? '#1e1b4b' : 'transparent', color: '#fff', transition: 'all 0.2s' }}
+              style={{ flex: 1, minWidth: '120px', padding: '14px', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '8px', cursor: 'pointer', border: selectedGame === 'WYR' ? '2px solid var(--primary)' : '1px solid #262636', backgroundColor: selectedGame === 'WYR' ? '#1e1b4b' : 'transparent', color: '#fff', transition: 'all 0.2s' }}
             >
               Would You Rather
+            </button>
+            <button 
+              onClick={() => setSelectedGame('GTS')}
+              style={{ flex: 1, minWidth: '120px', padding: '14px', fontSize: '1.1rem', fontWeight: 'bold', borderRadius: '8px', cursor: 'pointer', border: selectedGame === 'GTS' ? '2px solid var(--primary)' : '1px solid #262636', backgroundColor: selectedGame === 'GTS' ? '#1e1b4b' : 'transparent', color: '#fff', transition: 'all 0.2s' }}
+            >
+              Guess The Song
             </button>
           </div>
         </div>
 
         <button onClick={handleStartGame} disabled={loading} className="btn btn-primary" style={{ height: '70px', fontSize: '1.6rem', background: 'var(--truth-green)', marginTop: '30px' }}>
-          {loading ? 'Processing...' : `Start Match`}
+          {loading ? 'Processing...' : `Start ${getGameLabel()}`}
         </button>
       </div>
 

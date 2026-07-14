@@ -59,7 +59,7 @@ export default function JoinView({ onJoinSuccess }: JoinViewProps) {
       onJoinSuccess(cleanRoom);
 
     } catch (err) {
-      console.error(err);
+      console.error('Lobby registration failure:', err);
       alert('Error trying to register into the room.');
     } finally {
       setIsSubmitting(false);
@@ -98,7 +98,7 @@ export default function JoinView({ onJoinSuccess }: JoinViewProps) {
         </div>
 
         <button type="submit" disabled={isSubmitting} className="btn btn-primary" style={{ marginTop: '10px', height: '54px' }}>
-          {isSubmitting ? 'Connecting...' : 'Enter Arena'}
+          {isSubmitting ? 'Connecting to Arena...' : 'Enter Arena'}
         </button>
       </form>
     </div>

@@ -4,25 +4,32 @@ import JoinView from '@/views/players/JoinView';
 import PlayerVoteView from '@/views/players/VoteView';
 import PlayerScoreView from '@/views/players/ScoreView';
 
+type GameType = '2L1T' | 'WYR' | 'GTS';
+
 export default function PublicScreen() {
   const [hasJoined, setHasJoined] = useState(false);
   const [roomStatus, setRoomStatus] = useState<string>('LOBBY');
+  const [gameType, setGameType] = useState<GameType>('2L1T');
   const [currentRoundId, setCurrentRoundId] = useState<string | null>(null);
   const [isVerifying, setIsVerifying] = useState(true);
   const [roomCode, setRoomCode] = useState<string>(() => localStorage.getItem('active_room_code') || '');
 
-  const fetchLatestRound = async (roomId: string) => {
+  const fetchLatestRound = async (roomId: string, activeGameType: GameType) => {
+    let targetTable = 'tl_rounds';
+    if (activeGameType === 'WYR') targetTable = 'wyr_rounds';
+    if (activeGameType === 'GTS') targetTable = 'gts_rounds';
+
     const { data } = await supabase
-      .from('rounds')
+      .from(targetTable)
       .select('id')
       .eq('room_id', roomId)
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
+      
     return data?.id || null;
   };
 
-  // Helper function to completely wipe local states and storage
   const clearLocalSession = () => {
     localStorage.removeItem('player_id');
     localStorage.removeItem('player_name');
@@ -30,6 +37,7 @@ export default function PublicScreen() {
     setHasJoined(false);
     setRoomCode('');
     setRoomStatus('LOBBY');
+    setGameType('2L1T');
     setCurrentRoundId(null);
     setIsVerifying(false);
   };
@@ -45,7 +53,7 @@ export default function PublicScreen() {
 
       const { data: room } = await supabase
         .from('rooms')
-        .select('id, status')
+        .select('id, status, game_type')
         .eq('room_code', roomCode)
         .maybeSingle();
 
@@ -54,7 +62,9 @@ export default function PublicScreen() {
         return;
       }
 
+      const activeGameType = (room.game_type || '2L1T') as GameType;
       setRoomStatus(room.status);
+      setGameType(activeGameType);
 
       const storedPlayerId = localStorage.getItem('player_id');
       if (storedPlayerId) {
@@ -77,7 +87,7 @@ export default function PublicScreen() {
       setIsVerifying(false);
 
       if (room.status === 'VOTING' || room.status === 'RESULTS') {
-        const roundId = await fetchLatestRound(room.id);
+        const roundId = await fetchLatestRound(room.id, activeGameType);
         setCurrentRoundId(roundId);
       }
 
@@ -92,9 +102,13 @@ export default function PublicScreen() {
               clearLocalSession();
             } else if (payload.eventType === 'UPDATE') {
               const nextStatus = payload.new.status;
+              const nextGameType = (payload.new.game_type || '2L1T') as GameType;
+              
               setRoomStatus(nextStatus);
+              setGameType(nextGameType);
+              
               if (nextStatus === 'VOTING' || nextStatus === 'RESULTS') {
-                const roundId = await fetchLatestRound(payload.new.id);
+                const roundId = await fetchLatestRound(payload.new.id, nextGameType);
                 setCurrentRoundId(roundId);
               }
             }
@@ -125,7 +139,7 @@ export default function PublicScreen() {
   if (isVerifying) {
     return (
       <div style={{ padding: '40px', textAlign: 'center', fontFamily: 'sans-serif', color: '#aaa' }}>
-        <h3>🔄 Connecting to session...</h3>
+        <h3>Connecting to session...</h3>
       </div>
     );
   }
@@ -147,9 +161,14 @@ export default function PublicScreen() {
       case 'LOBBY':
       case 'WRITING':
         return (
-          <div style={{ padding: '20px', textAlign: 'center' }}>
-            <h2>⏳ Room: {roomCode}</h2>
-            <p style={{ color: 'var(--text-muted)', marginTop: '10px' }}>Presenter is setting up the round. Watch the main screen.</p>
+          <div className="mobile-container" style={{ justifyContent: 'center' }}>
+            <div className="mobile-card" style={{ textAlign: 'center', padding: '30px 20px' }}>
+              <span style={{ fontSize: '2.5rem' }}>⏳</span>
+              <h2 style={{ marginTop: '15px' }}>Room: {roomCode}</h2>
+              <p style={{ color: 'var(--text-muted)', marginTop: '10px', fontSize: '0.95rem', lineHeight: '1.4' }}>
+                The host is setting up the stage. Look up at the primary screen!
+              </p>
+            </div>
           </div>
         );
       case 'VOTING':
@@ -157,12 +176,19 @@ export default function PublicScreen() {
       case 'RESULTS':
         return <PlayerScoreView currentRoundId={currentRoundId} />;
       default:
-        return <div style={{ padding: '20px' }}>Loading...</div>;
+        return <div style={{ padding: '20px', textAlign: 'center' }}>Loading phase...</div>;
     }
+  };
+
+  const getMiniLabel = () => {
+    if (gameType === 'WYR') return 'WYR';
+    if (gameType === 'GTS') return 'Song Guess';
+    return '2L1T';
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      
       <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
@@ -171,9 +197,15 @@ export default function PublicScreen() {
         backgroundColor: 'var(--bg-card)', 
         borderBottom: '1px solid #262636' 
       }}>
-        <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 'bold' }}>
-          ROOM: <span style={{ color: 'var(--primary)' }}>{roomCode}</span>
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 'bold' }}>
+            ROOM: <span style={{ color: 'var(--primary)' }}>{roomCode}</span>
+          </span>
+          <span style={{ fontSize: '0.75rem', padding: '2px 8px', backgroundColor: '#1e1b4b', borderRadius: '10px', color: 'var(--primary)', fontWeight: 'bold' }}>
+            {getMiniLabel()}
+          </span>
+        </div>
+        
         <button 
           onClick={handleLeaveRoom}
           style={{ 
@@ -197,6 +229,7 @@ export default function PublicScreen() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {renderGameView()}
       </div>
+      
     </div>
   );
 }
