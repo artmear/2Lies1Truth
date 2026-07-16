@@ -1,6 +1,6 @@
 # FunFriends - Realtime Multi-Game Party Hub
 
-An interactive, synchronous real-time party game platform designed for local gatherings and crowds. Inspired by classic party suites, this project transforms any primary screen  into a centralized game dashboard, while players interact seamlessly and simultaneously using their smartphones as controllers.
+An interactive, real-time, and synchronous party game platform designed for local gatherings and large groups. Inspired by classic game rooms, this project transforms any main screen into a centralized control panel, while players interact seamlessly and simultaneously using their smartphones as voting devices.
 
 ## Prerequisites
 
